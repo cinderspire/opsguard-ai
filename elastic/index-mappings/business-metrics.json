@@ -1,0 +1,55 @@
+{
+    "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas": 0
+    },
+    "mappings": {
+        "properties": {
+            "@timestamp": {
+                "type": "date"
+            },
+            "service.name": {
+                "type": "keyword"
+            },
+            "service.tier": {
+                "type": "keyword"
+            },
+            "transactions.count": {
+                "type": "long"
+            },
+            "transactions.success_count": {
+                "type": "long"
+            },
+            "transactions.failure_count": {
+                "type": "long"
+            },
+            "transactions.success_rate": {
+                "type": "float"
+            },
+            "revenue.amount_usd": {
+                "type": "float"
+            },
+            "revenue.baseline_hourly_usd": {
+                "type": "float"
+            },
+            "active_users": {
+                "type": "integer"
+            },
+            "active_sessions": {
+                "type": "integer"
+            },
+            "error_rate_percent": {
+                "type": "float"
+            },
+            "avg_response_time_ms": {
+                "type": "float"
+            },
+            "p99_response_time_ms": {
+                "type": "float"
+            },
+            "sla_compliance": {
+                "type": "boolean"
+            }
+        }
+    }
+}

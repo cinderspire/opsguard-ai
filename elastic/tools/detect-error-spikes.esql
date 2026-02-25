@@ -1,0 +1,30 @@
+-- ============================================================
+-- ES|QL Tool: detect_error_spikes
+-- Purpose: Detect sudden increases in error rates per service
+-- ============================================================
+-- Tool Configuration in Kibana Agent Builder:
+--   ID: detect_error_spikes
+--   Name: Detect Error Rate Spikes
+--   Type: ES|QL
+--   Description: Identifies sudden error rate increases by
+--     analyzing log patterns in time buckets. Use when monitoring
+--     for service degradation or after deployment.
+-- ============================================================
+
+FROM logs-opsguard-incidents
+| WHERE @timestamp > NOW() - 1 hour
+| STATS
+    total_events = COUNT(*),
+    unique_errors = COUNT_DISTINCT(error.code),
+    avg_response = AVG(response_time_ms),
+    max_response = MAX(response_time_ms)
+  BY service.name, log.level
+| WHERE log.level IN ("ERROR", "CRITICAL")
+| EVAL error_severity = CASE(
+    total_events > 100, "SPIKE",
+    total_events > 50, "ELEVATED",
+    total_events > 10, "MODERATE",
+    "LOW"
+  )
+| SORT total_events DESC
+| LIMIT 20

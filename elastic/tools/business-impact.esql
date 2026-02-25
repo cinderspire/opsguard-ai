@@ -1,0 +1,39 @@
+-- ============================================================
+-- ES|QL Tool: calculate_business_impact
+-- Purpose: Calculate revenue and business impact of incidents
+-- Parameters: ?service_name
+-- ============================================================
+-- Tool Configuration in Kibana Agent Builder:
+--   ID: calculate_business_impact
+--   Name: Calculate Business Impact
+--   Type: ES|QL
+--   Description: Calculates the financial and user impact of
+--     a service incident by analyzing current business metrics.
+--     Use to quantify revenue loss and prioritize response.
+--   Parameters:
+--     service_name: string - Affected service name
+-- ============================================================
+
+FROM business-opsguard-metrics
+| WHERE @timestamp > NOW() - 1 hour
+  AND service.name == ?service_name
+| STATS
+    total_transactions = SUM(transactions.count),
+    total_successes = SUM(transactions.success_count),
+    total_failures = SUM(transactions.failure_count),
+    total_revenue = SUM(revenue.amount_usd),
+    avg_baseline_hourly = AVG(revenue.baseline_hourly_usd),
+    avg_active_users = AVG(active_users),
+    avg_error_rate = AVG(error_rate_percent),
+    avg_response_time = AVG(avg_response_time_ms),
+    data_points = COUNT(*)
+| EVAL
+    success_rate = ROUND(total_successes * 100.0 / total_transactions, 2),
+    hourly_revenue_rate = ROUND(total_revenue * 60.0 / data_points, 2),
+    estimated_loss_per_hour = ROUND(avg_baseline_hourly - hourly_revenue_rate, 2),
+    impact_priority = CASE(
+      estimated_loss_per_hour > 10000, "P0-CRITICAL",
+      estimated_loss_per_hour > 1000, "P1-HIGH",
+      estimated_loss_per_hour > 100, "P2-MEDIUM",
+      "P3-LOW"
+    )

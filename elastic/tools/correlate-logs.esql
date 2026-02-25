@@ -1,0 +1,29 @@
+-- ============================================================
+-- ES|QL Tool: correlate_logs_and_errors
+-- Purpose: Deep-dive log analysis for a specific service
+-- Parameters: ?service_name
+-- ============================================================
+-- Tool Configuration in Kibana Agent Builder:
+--   ID: correlate_logs_and_errors
+--   Name: Correlate Logs and Errors
+--   Type: ES|QL
+--   Description: Performs deep log correlation for a specific
+--     service, grouping errors by host, log level, and deployment.
+--     Use after anomaly detection to investigate root cause.
+--   Parameters:
+--     service_name: string - Name of the service to investigate
+-- ============================================================
+
+FROM logs-opsguard-incidents
+| WHERE @timestamp > NOW() - 1 hour
+  AND service.name == ?service_name
+| STATS
+    total_logs = COUNT(*),
+    unique_error_codes = COUNT_DISTINCT(error.code),
+    avg_response_ms = AVG(response_time_ms),
+    max_response_ms = MAX(response_time_ms),
+    min_timestamp = MIN(@timestamp),
+    max_timestamp = MAX(@timestamp)
+  BY host.name, log.level, deployment.version
+| SORT total_logs DESC
+| LIMIT 30

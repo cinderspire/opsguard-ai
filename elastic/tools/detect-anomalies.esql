@@ -1,0 +1,36 @@
+-- ============================================================
+-- ES|QL Tool: detect_anomalies
+-- Purpose: Detect system metric anomalies across all services
+-- Parameters: ?time_window (e.g., "15 minutes", "1 hour")
+-- ============================================================
+-- Tool Configuration in Kibana Agent Builder:
+--   ID: detect_anomalies
+--   Name: Detect System Anomalies
+--   Type: ES|QL
+--   Description: Scans system metrics to find services with
+--     abnormal CPU, memory, or load patterns. Use this tool
+--     when checking overall system health or responding to alerts.
+--   Parameters:
+--     time_window: string - How far back to look (e.g., '15 minutes')
+-- ============================================================
+
+FROM metrics-opsguard-system
+| WHERE @timestamp > NOW() - 1 hour
+| STATS
+    avg_cpu = AVG(system.cpu.usage_percent),
+    max_cpu = MAX(system.cpu.usage_percent),
+    avg_memory = AVG(system.memory.usage_percent),
+    max_memory = MAX(system.memory.usage_percent),
+    avg_disk = AVG(system.disk.usage_percent),
+    avg_load = AVG(system.load.1m),
+    sample_count = COUNT(*)
+  BY service.name, host.name, geo.region
+| WHERE avg_cpu > 60 OR avg_memory > 70 OR avg_disk > 80
+| EVAL severity = CASE(
+    max_cpu > 95 OR max_memory > 95, "CRITICAL",
+    max_cpu > 85 OR max_memory > 85, "HIGH",
+    max_cpu > 75 OR max_memory > 75, "MEDIUM",
+    "LOW"
+  )
+| SORT max_cpu DESC
+| LIMIT 20

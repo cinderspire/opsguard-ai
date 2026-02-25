@@ -1,0 +1,77 @@
+# ============================================================
+# Elastic Workflow: Notify Operations Team
+# Sends structured alerts to the ops team
+# ============================================================
+name: opsguard-notify-team
+description: >
+  Sends a structured alert notification to the operations team
+  with incident details, business impact, and recommended actions.
+  Logs all notifications for audit compliance.
+trigger:
+  type: api
+
+inputs:
+  - name: severity
+    type: string
+    description: "Incident severity level"
+  - name: service_name
+    type: string
+    description: "Affected service name"
+  - name: root_cause
+    type: string
+    description: "Root cause summary"
+  - name: business_impact
+    type: string
+    description: "Business impact description"
+  - name: recommended_action
+    type: string
+    description: "Recommended immediate action"
+  - name: incident_id
+    type: string
+    description: "Incident ticket ID"
+
+steps:
+  - id: format_notification
+    action: transform
+    input:
+      emoji: >
+        {% if severity == 'CRITICAL' %}🚨
+        {% elif severity == 'HIGH' %}🔴
+        {% elif severity == 'MEDIUM' %}🟡
+        {% else %}🟢{% endif %}
+      message: |
+        {{emoji}} OpsGuard Alert: {{severity}}
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        📋 Incident: {{incident_id}}
+        🖥️  Service: {{service_name}}
+        🔍 Root Cause: {{root_cause}}
+        💰 Impact: {{business_impact}}
+        ⚡ Action: {{recommended_action}}
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        View details in OpsGuard Dashboard
+
+  - id: send_notification
+    action: elasticsearch.index
+    input:
+      index: notifications-opsguard
+      document:
+        type: "ops_alert"
+        channel: "ops-critical"
+        severity: "{{severity}}"
+        service: "{{service_name}}"
+        incident_id: "{{incident_id}}"
+        message: "{{format_notification.message}}"
+        sent_at: "{{now}}"
+        acknowledged: false
+
+  - id: log_notification
+    action: elasticsearch.index
+    input:
+      index: audit-opsguard-actions
+      document:
+        action: "notification_sent"
+        incident_id: "{{incident_id}}"
+        channel: "ops-critical"
+        severity: "{{severity}}"
+        timestamp: "{{now}}"
+        agent: "opsguard-commander"

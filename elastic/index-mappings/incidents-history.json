@@ -1,0 +1,67 @@
+{
+    "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas": 0
+    },
+    "mappings": {
+        "properties": {
+            "incident_id": {
+                "type": "keyword"
+            },
+            "title": {
+                "type": "text"
+            },
+            "description": {
+                "type": "semantic_text"
+            },
+            "root_cause": {
+                "type": "text"
+            },
+            "root_cause_category": {
+                "type": "keyword"
+            },
+            "resolution_steps": {
+                "type": "text"
+            },
+            "severity": {
+                "type": "keyword"
+            },
+            "status": {
+                "type": "keyword"
+            },
+            "service_affected": {
+                "type": "keyword"
+            },
+            "services_impacted": {
+                "type": "keyword"
+            },
+            "resolution_time_minutes": {
+                "type": "integer"
+            },
+            "revenue_impact_usd": {
+                "type": "float"
+            },
+            "created_at": {
+                "type": "date"
+            },
+            "resolved_at": {
+                "type": "date"
+            },
+            "assigned_to": {
+                "type": "keyword"
+            },
+            "tags": {
+                "type": "keyword"
+            },
+            "runbook_url": {
+                "type": "keyword"
+            },
+            "deployment_version": {
+                "type": "keyword"
+            },
+            "post_mortem": {
+                "type": "text"
+            }
+        }
+    }
+}

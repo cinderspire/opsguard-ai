@@ -1,0 +1,35 @@
+{
+    "id": "search_similar_incidents",
+    "name": "Search Similar Incidents",
+    "type": "index_search",
+    "description": "Searches past incidents using semantic similarity to find historical cases with similar symptoms, root causes, and proven resolutions. Use this tool when investigating a new incident to leverage historical knowledge.",
+    "index": "incidents-opsguard-history",
+    "search_fields": [
+        {
+            "field": "description",
+            "type": "semantic_text"
+        }
+    ],
+    "result_fields": [
+        "incident_id",
+        "title",
+        "description",
+        "root_cause",
+        "root_cause_category",
+        "resolution_steps",
+        "severity",
+        "service_affected",
+        "resolution_time_minutes",
+        "revenue_impact_usd",
+        "tags",
+        "post_mortem"
+    ],
+    "max_results": 5,
+    "parameters": [
+        {
+            "name": "query",
+            "type": "string",
+            "description": "Description of the current incident symptoms to find similar historical incidents"
+        }
+    ]
+}

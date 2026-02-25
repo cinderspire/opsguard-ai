@@ -1,0 +1,85 @@
+{
+    "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas": 0
+    },
+    "mappings": {
+        "properties": {
+            "@timestamp": {
+                "type": "date"
+            },
+            "service.name": {
+                "type": "keyword"
+            },
+            "service.environment": {
+                "type": "keyword"
+            },
+            "host.name": {
+                "type": "keyword"
+            },
+            "host.ip": {
+                "type": "ip"
+            },
+            "system.cpu.usage_percent": {
+                "type": "float"
+            },
+            "system.memory.usage_percent": {
+                "type": "float"
+            },
+            "system.memory.used_bytes": {
+                "type": "long"
+            },
+            "system.memory.total_bytes": {
+                "type": "long"
+            },
+            "system.disk.read_bytes_per_sec": {
+                "type": "float"
+            },
+            "system.disk.write_bytes_per_sec": {
+                "type": "float"
+            },
+            "system.disk.usage_percent": {
+                "type": "float"
+            },
+            "system.load.1m": {
+                "type": "float"
+            },
+            "system.load.5m": {
+                "type": "float"
+            },
+            "system.load.15m": {
+                "type": "float"
+            },
+            "network.bytes_in": {
+                "type": "long"
+            },
+            "network.bytes_out": {
+                "type": "long"
+            },
+            "network.connections_active": {
+                "type": "integer"
+            },
+            "container.id": {
+                "type": "keyword"
+            },
+            "container.cpu.usage_percent": {
+                "type": "float"
+            },
+            "container.memory.usage_percent": {
+                "type": "float"
+            },
+            "kubernetes.pod.name": {
+                "type": "keyword"
+            },
+            "kubernetes.node.name": {
+                "type": "keyword"
+            },
+            "geo.location": {
+                "type": "geo_point"
+            },
+            "geo.region": {
+                "type": "keyword"
+            }
+        }
+    }
+}

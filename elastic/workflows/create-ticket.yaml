@@ -1,0 +1,71 @@
+# ============================================================
+# Elastic Workflow: Create Incident Ticket
+# Triggered by OpsGuard Commander when an incident is confirmed
+# ============================================================
+name: opsguard-create-incident-ticket
+description: >
+  Creates a structured incident ticket in Elasticsearch when
+  OpsGuard Commander confirms an incident. Records all diagnostic
+  data for audit trail and post-mortem analysis.
+trigger:
+  type: api
+
+inputs:
+  - name: incident_title
+    type: string
+    description: "Title of the incident"
+  - name: severity
+    type: string
+    description: "Severity level: CRITICAL, HIGH, MEDIUM, LOW"
+  - name: service_name
+    type: string
+    description: "Name of the affected service"
+  - name: root_cause
+    type: string
+    description: "Identified root cause"
+  - name: business_impact
+    type: string
+    description: "Business impact summary"
+  - name: recommended_actions
+    type: string
+    description: "List of recommended remediation actions"
+
+steps:
+  - id: generate_incident_id
+    action: transform
+    input:
+      incident_id: "OPS-{{now | date_format('yyyyMMdd-HHmmss')}}"
+      status: "open"
+      priority: >
+        {% if severity == 'CRITICAL' %}P0
+        {% elif severity == 'HIGH' %}P1
+        {% elif severity == 'MEDIUM' %}P2
+        {% else %}P3{% endif %}
+
+  - id: create_ticket
+    action: elasticsearch.index
+    input:
+      index: incidents-opsguard-active
+      document:
+        incident_id: "{{generate_incident_id.incident_id}}"
+        title: "{{incident_title}}"
+        severity: "{{severity}}"
+        priority: "{{generate_incident_id.priority}}"
+        status: "{{generate_incident_id.status}}"
+        service_affected: "{{service_name}}"
+        root_cause: "{{root_cause}}"
+        business_impact: "{{business_impact}}"
+        recommended_actions: "{{recommended_actions}}"
+        created_at: "{{now}}"
+        assigned_to: "on-call-team"
+
+  - id: log_event
+    action: elasticsearch.index
+    input:
+      index: audit-opsguard-actions
+      document:
+        action: "ticket_created"
+        incident_id: "{{generate_incident_id.incident_id}}"
+        details: "Incident ticket created for {{service_name}} - {{severity}}"
+        timestamp: "{{now}}"
+        agent: "opsguard-commander"
