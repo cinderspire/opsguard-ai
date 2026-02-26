@@ -41,10 +41,10 @@ DATA_DIR="$PROJECT_DIR/generated-data"
 echo -e "\n${BLUE}📦 Step 1: Creating Elasticsearch indices...${NC}"
 
 declare -A INDEX_MAP=(
-    ["logs-opsguard-incidents"]="$MAPPINGS_DIR/logs-incidents.json"
-    ["metrics-opsguard-system"]="$MAPPINGS_DIR/metrics-system.json"
-    ["incidents-opsguard-history"]="$MAPPINGS_DIR/incidents-history.json"
-    ["business-opsguard-metrics"]="$MAPPINGS_DIR/business-metrics.json"
+    ["opsguard-incidents"]="$MAPPINGS_DIR/logs-incidents.json"
+    ["opsguard-metrics"]="$MAPPINGS_DIR/metrics-system.json"
+    ["opsguard-history"]="$MAPPINGS_DIR/incidents-history.json"
+    ["opsguard-business"]="$MAPPINGS_DIR/business-metrics.json"
 )
 
 for index_name in "${!INDEX_MAP[@]}"; do
@@ -72,7 +72,7 @@ for index_name in "${!INDEX_MAP[@]}"; do
 done
 
 # Create additional indices for workflows
-for extra_index in "incidents-opsguard-active" "notifications-opsguard" "audit-opsguard-actions"; do
+for extra_index in "opsguard-active" "opsguard-notifications" "opsguard-audit"; do
     echo -e "  Creating ${GREEN}$extra_index${NC}..."
     curl -s -X PUT "$ES_URL/$extra_index" \
         -H "Authorization: ApiKey $ES_API_KEY" \

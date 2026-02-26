@@ -58,18 +58,17 @@ Production Systems → Elasticsearch
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/opsguard-ai.git
+git clone https://github.com/hasankaankaplan/opsguard-ai.git
 cd opsguard-ai
 
 # 2. Set your Elastic Cloud credentials
-export ES_URL="https://your-deployment.es.cloud.elastic.co"
-export ES_API_KEY="your-api-key"
+export ES_URL="https://your-project.es.region.gcp.elastic.cloud"
+export ES_API_KEY="your-api-key-here"
 
-# 3. Run the automated setup
-chmod +x scripts/setup.sh
-./scripts/setup.sh
+# 3. Ingest sample data (creates indices + bulk loads data)
+python3 scripts/ingest_to_elastic.py
 
-# 4. Open Kibana → Agent Builder → Create agents and tools
+# 4. Open Kibana → Agent Builder → Create tools and agents
 ```
 
 ### Manual Setup
@@ -85,48 +84,55 @@ chmod +x scripts/setup.sh
 
 | Feature | Usage | Files |
 |---------|-------|-------|
-| **ES|QL** | 5 parameterized analytical tools (STATS, TIME_BUCKET, PERCENTILE, CASE) | `elastic/tools/*.esql` |
-| **Semantic Search** | Similar incident matching via `semantic_text` field | `elastic/tools/search-incidents.json` |
-| **Elastic Workflows** | Deterministic ticket creation + team notifications | `elastic/workflows/*.yaml` |
-| **Agent Builder** | 4 custom agents with specialized instructions | `elastic/agents/*.yaml` |
+| **ES|QL** | 5 parameterized tools: `STATS`, `EVAL`, `CASE`, `COUNT_DISTINCT`, `PERCENTILE` | `elastic/tools/*.esql` |
+| **Semantic Search** | `semantic_text` field on `opsguard-history` — zero embedding pipeline setup | `elastic/tools/search-incidents.json` |
+| **Elastic Workflows** | 2 deterministic YAML automations with complete audit trail in `opsguard-audit` | `elastic/workflows/*.yaml` |
+| **Agent Builder** | Unified Commander agent + 3 specialist agents, 7 tools, multi-step protocol | `elastic/agents/*.yaml` |
+| **Elasticsearch Serverless** | All 7 indices use Serverless-compatible mappings (no shard/replica settings) | `elastic/index-mappings/*.json` |
 
 ## 📂 Project Structure
 
 ```
 opsguard-ai/
 ├── README.md
+├── SETUP.md                         # ← Step-by-step reproduction guide for judges
 ├── LICENSE                          # Apache 2.0
+├── .env.example                     # Environment variable template
 ├── docs/
-│   └── architecture.md              # Full architecture docs
+│   ├── architecture.md              # Full architecture diagram
+│   ├── devpost-submission.md        # Hackathon submission text
+│   └── demo-script.md              # 3-minute demo walkthrough script
 ├── elastic/
 │   ├── index-mappings/              # Elasticsearch index definitions
-│   │   ├── logs-incidents.json
-│   │   ├── metrics-system.json
-│   │   ├── incidents-history.json   # semantic_text for vector search
-│   │   └── business-metrics.json
+│   │   ├── logs-incidents.json      # Application logs & errors
+│   │   ├── metrics-system.json      # CPU/memory/disk metrics
+│   │   ├── incidents-history.json   # semantic_text → vector search
+│   │   └── business-metrics.json    # Revenue & transaction data
 │   ├── agents/                      # Agent Builder configurations
-│   │   ├── monitor-agent.yaml       # Anomaly detection + severity
+│   │   ├── commander-agent.yaml     # ← Main agent (use this in Agent Builder)
+│   │   ├── monitor-agent.yaml       # Anomaly detection specialist
 │   │   ├── diagnose-agent.yaml      # Root cause + confidence scoring
-│   │   ├── impact-agent.yaml        # Revenue loss calculation
-│   │   └── commander-agent.yaml     # Orchestrator + actions
-│   ├── tools/                       # Custom tool definitions
-│   │   ├── detect-anomalies.esql
-│   │   ├── detect-error-spikes.esql
-│   │   ├── correlate-logs.esql
-│   │   ├── check-deployments.esql
-│   │   ├── business-impact.esql
-│   │   └── search-incidents.json
-│   └── workflows/                   # Elastic Workflow YAML
-│       ├── create-ticket.yaml
-│       └── notify-team.yaml
+│   │   └── impact-agent.yaml        # Revenue loss calculation
+│   ├── tools/                       # ES|QL & Search tool definitions
+│   │   ├── detect-anomalies.esql    # STATS + CASE severity classification
+│   │   ├── detect-error-spikes.esql # COUNT_DISTINCT error analysis
+│   │   ├── correlate-logs.esql      # Per-service log deep-dive
+│   │   ├── check-deployments.esql   # Deployment correlation
+│   │   ├── business-impact.esql     # EVAL revenue loss formula
+│   │   └── search-incidents.json    # Semantic vector search config
+│   └── workflows/                   # Elastic Workflow YAML automations
+│       ├── create-ticket.yaml       # Incident ticket → opsguard-active
+│       └── notify-team.yaml         # Alert → opsguard-notifications + audit
 ├── data/
-│   └── sample-data-generator.py     # Realistic incident scenario
-├── frontend/                        # Dashboard UI
+│   └── sample-data-generator.py     # Generates realistic incident scenario
+├── frontend/                        # Live dashboard UI
 │   ├── index.html
 │   ├── styles.css
-│   └── app.js
+│   ├── app.js                       # Demo auto-play + live ES data
+│   └── es-connector.js              # ES|QL queries from browser
 └── scripts/
-    └── setup.sh                     # One-command setup
+    ├── ingest_to_elastic.py         # ← Primary setup script (Serverless v2)
+    └── setup.sh                     # Alternative bash setup
 ```
 
 ## 📈 Measurable Impact
@@ -138,11 +144,27 @@ opsguard-ai/
 | **Revenue loss per incident** | $10K-50K | $500-2K | **80-95% reduced** |
 | **Night-time on-call wakes** | 5-10/week | 1-2/week | **80% fewer** |
 
+## 📊 Kibana Dashboard
+
+Import the pre-built dashboard for instant visualization:
+
+**Kibana → Stack Management → Saved Objects → Import → `elastic/kibana-dashboard.ndjson`**
+
+Includes 8 panels: CPU metrics, error distribution, revenue impact, incident history table, response time, memory usage.
+
+## 🗂️ Full Setup Guide
+
+See **[SETUP.md](SETUP.md)** for a step-by-step reproduction guide including:
+- Creating Elastic Cloud Serverless project
+- Ingesting sample data
+- Creating all tools, agents, and workflows in Kibana Agent Builder
+- Connecting the live dashboard
+
 ## 🏆 Hackathon Submission
 
 - **Hackathon:** [Elasticsearch Agent Builder Hackathon](https://elasticsearch.devpost.com/)
-- **Demo Video:** [3-minute walkthrough](#) <!-- Replace with actual link -->
-- **Social:** [@elastic_devs tagged post](#) <!-- Replace with actual link -->
+- **Demo Video:** _Link will be added before submission_
+- **Social:** _Post with @elastic_devs tag before Feb 27 deadline_
 
 ## 📜 License
 

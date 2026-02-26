@@ -45,7 +45,7 @@ steps:
   - id: create_ticket
     action: elasticsearch.index
     input:
-      index: incidents-opsguard-active
+      index: opsguard-active
       document:
         incident_id: "{{generate_incident_id.incident_id}}"
         title: "{{incident_title}}"
@@ -62,7 +62,7 @@ steps:
   - id: log_event
     action: elasticsearch.index
     input:
-      index: audit-opsguard-actions
+      index: opsguard-audit
       document:
         action: "ticket_created"
         incident_id: "{{generate_incident_id.incident_id}}"

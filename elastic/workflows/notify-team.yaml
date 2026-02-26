@@ -53,7 +53,7 @@ steps:
   - id: send_notification
     action: elasticsearch.index
     input:
-      index: notifications-opsguard
+      index: opsguard-notifications
       document:
         type: "ops_alert"
         channel: "ops-critical"
@@ -67,7 +67,7 @@ steps:
   - id: log_notification
     action: elasticsearch.index
     input:
-      index: audit-opsguard-actions
+      index: opsguard-audit
       document:
         action: "notification_sent"
         incident_id: "{{incident_id}}"

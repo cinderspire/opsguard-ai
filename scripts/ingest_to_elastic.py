@@ -10,8 +10,13 @@ Fixes:
 
 import os, json, time, sys, urllib.request, urllib.error
 
-ES_URL = "https://my-security-project-f1d9e2.es.europe-west3.gcp.elastic.cloud"
-API_KEY = "bzFUM2xKd0I5aFNPTGtnYkJUYnE6VDh3Wkl5VTEyMEZNSy1KOFIzX0pGUQ=="
+ES_URL = os.environ.get("ES_URL", "")
+API_KEY = os.environ.get("ES_API_KEY", "")
+
+if not ES_URL:
+    ES_URL = input("Enter your Elasticsearch URL (e.g. https://my-project.es.region.gcp.elastic.cloud): ").strip()
+if not API_KEY:
+    API_KEY = input("Enter your Elastic API Key: ").strip()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "generated-data")
@@ -80,19 +85,14 @@ def create_indices():
         status, _ = es_request("PUT", idx_name, data=mapping)
         print(f"    {'✅ OK' if status in [200, 201] else '❌ FAILED'}")
 
-    # History index (simple mapping)
+    # History index — uses full incidents-history.json mapping (semantic_text for vector search)
     print(f"\n  Creating opsguard-history...")
     es_request("DELETE", "opsguard-history")
-    status, _ = es_request("PUT", "opsguard-history", data={
-        "mappings": {"properties": {
-            "incident_id": {"type": "keyword"}, "title": {"type": "text"},
-            "description": {"type": "text"}, "root_cause": {"type": "text"},
-            "root_cause_category": {"type": "keyword"}, "severity": {"type": "keyword"},
-            "status": {"type": "keyword"}, "service_affected": {"type": "keyword"},
-            "resolution_time_minutes": {"type": "integer"}, "revenue_impact_usd": {"type": "float"},
-            "created_at": {"type": "date"}, "resolved_at": {"type": "date"},
-        }}
-    })
+    history_path = os.path.join(MAPPINGS_DIR, "incidents-history.json")
+    with open(history_path) as f:
+        history_mapping = json.load(f)
+    history_mapping.pop("settings", None)  # Serverless doesn't support shard settings
+    status, _ = es_request("PUT", "opsguard-history", data=history_mapping)
     print(f"    {'✅ OK' if status in [200, 201] else '❌ FAILED'}")
 
     # Workflow indices (no mapping needed)

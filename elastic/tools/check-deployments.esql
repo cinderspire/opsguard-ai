@@ -1,28 +1,29 @@
 -- ============================================================
 -- ES|QL Tool: check_recent_deployments
--- Purpose: Find recent deployments that may correlate with issues
--- Parameters: ?time_window
+-- Purpose: Find recent deployments correlated with a specific service
+-- Parameters: ?service_name
 -- ============================================================
 -- Tool Configuration:
 --   ID: check_recent_deployments
 --   Name: Check Recent Deployments
 --   Type: ES|QL
---   Description: Searches for recent code deployments and
---     correlates them with error onset times. Use this to
---     determine if a recent release caused the incident.
+--   Description: Searches for recent code deployments for a given
+--     service and correlates them with error onset times. Detects
+--     whether a new release caused the incident. Use after anomaly
+--     detection to check for deployment-related root causes.
 --   Parameters:
---     - time_window: string, "Lookback period for deployments"
+--     - service_name: string, "Name of the service to check deployments for"
 -- ============================================================
 
 FROM opsguard-incidents
-| WHERE @timestamp > NOW() - ?time_window
+| WHERE @timestamp > NOW() - 2 hours
   AND deployment.version IS NOT NULL
+  AND service.name == ?service_name
 | STATS
     first_seen = MIN(@timestamp),
-    last_seen = MAX(@timestamp),
+    last_seen  = MAX(@timestamp),
     total_events = COUNT(*),
     error_count = COUNT(CASE(log.level == "ERROR" OR log.level == "CRITICAL", 1)),
-    services_affected = COUNT_DISTINCT(service.name),
     hosts_affected = COUNT_DISTINCT(host.name)
   BY deployment.version, service.name
 | EVAL error_rate = ROUND(error_count * 100.0 / total_events, 2)

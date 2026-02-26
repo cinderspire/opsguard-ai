@@ -37,3 +37,5 @@ FROM opsguard-business
       estimated_loss_per_hour > 100, "P2-MEDIUM",
       "P3-LOW"
     )
+| SORT estimated_loss_per_hour DESC
+| LIMIT 10
