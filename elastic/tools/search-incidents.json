@@ -3,7 +3,7 @@
     "name": "Search Similar Incidents",
     "type": "index_search",
     "description": "Searches past incidents using semantic similarity to find historical cases with similar symptoms, root causes, and proven resolutions. Use this tool when investigating a new incident to leverage historical knowledge.",
-    "index": "incidents-opsguard-history",
+    "index": "opsguard-history",
     "search_fields": [
         {
             "field": "description",

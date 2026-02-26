@@ -14,10 +14,10 @@ const ES_CONFIG = {
 
     // Index names
     indices: {
-        logs: 'logs-opsguard-incidents',
-        metrics: 'metrics-opsguard-system',
-        incidents: 'incidents-opsguard-history',
-        business: 'business-opsguard-metrics',
+        logs: 'opsguard-incidents',
+        metrics: 'opsguard-metrics',
+        incidents: 'opsguard-history',
+        business: 'opsguard-business',
     }
 };
 
@@ -101,7 +101,7 @@ async function refreshLiveData() {
 
         // 2. Get service health via ES|QL
         const healthData = await esqlQuery(`
-            FROM metrics-opsguard-system
+            FROM opsguard-metrics
             | STATS avg_cpu = AVG(system.cpu.usage_percent), 
                     avg_memory = AVG(system.memory.usage_percent),
                     max_cpu = MAX(system.cpu.usage_percent)
@@ -115,7 +115,7 @@ async function refreshLiveData() {
 
         // 3. Get error distribution
         const errorData = await esqlQuery(`
-            FROM logs-opsguard-incidents
+            FROM opsguard-incidents
             | WHERE log.level IN ("ERROR", "CRITICAL")
             | STATS error_count = COUNT(*), 
                     unique_codes = COUNT_DISTINCT(error.code)
@@ -129,7 +129,7 @@ async function refreshLiveData() {
 
         // 4. Get business impact
         const bizData = await esqlQuery(`
-            FROM business-opsguard-metrics
+            FROM opsguard-business
             | STATS total_revenue = SUM(revenue.amount_usd),
                     avg_baseline = AVG(revenue.baseline_hourly_usd),
                     total_failures = SUM(transactions.failure_count),

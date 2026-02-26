@@ -11,7 +11,7 @@
 --     for service degradation or after deployment.
 -- ============================================================
 
-FROM logs-opsguard-incidents
+FROM opsguard-incidents
 | WHERE @timestamp > NOW() - 1 hour
 | STATS
     total_events = COUNT(*),

@@ -507,10 +507,10 @@ def save_bulk_format(data, output_dir):
     output_path.mkdir(parents=True, exist_ok=True)
 
     index_map = {
-        "logs": "logs-opsguard-incidents",
-        "metrics": "metrics-opsguard-system",
-        "business_metrics": "business-opsguard-metrics",
-        "incidents_history": "incidents-opsguard-history",
+        "logs": "opsguard-incidents",
+        "metrics": "opsguard-metrics",
+        "business_metrics": "opsguard-business",
+        "incidents_history": "opsguard-history",
     }
 
     for data_type, documents in data.items():

@@ -1,32 +1,63 @@
 {
-  "settings": {
-    "number_of_shards": 1,
-    "number_of_replicas": 0
-  },
   "mappings": {
     "properties": {
-      "@timestamp": { "type": "date" },
-      "service.name": { "type": "keyword" },
-      "service.environment": { "type": "keyword" },
-      "log.level": { "type": "keyword" },
-      "message": { "type": "text" },
-      "host.name": { "type": "keyword" },
-      "host.ip": { "type": "ip" },
-      "error.code": { "type": "keyword" },
-      "error.message": { "type": "text" },
-      "http.response.status_code": { "type": "integer" },
-      "http.request.method": { "type": "keyword" },
-      "url.path": { "type": "keyword" },
-      "response_time_ms": { "type": "float" },
-      "trace.id": { "type": "keyword" },
-      "span.id": { "type": "keyword" },
-      "deployment.version": { "type": "keyword" },
-      "deployment.timestamp": { "type": "date" },
-      "geo.location": { "type": "geo_point" },
-      "geo.region": { "type": "keyword" },
-      "container.id": { "type": "keyword" },
-      "kubernetes.pod.name": { "type": "keyword" },
-      "kubernetes.namespace": { "type": "keyword" }
+      "@timestamp": {
+        "type": "date"
+      },
+      "service.name": {
+        "type": "keyword"
+      },
+      "service.environment": {
+        "type": "keyword"
+      },
+      "log.level": {
+        "type": "keyword"
+      },
+      "message": {
+        "type": "text"
+      },
+      "host.name": {
+        "type": "keyword"
+      },
+      "host.ip": {
+        "type": "ip"
+      },
+      "error.code": {
+        "type": "keyword"
+      },
+      "error.message": {
+        "type": "text"
+      },
+      "http.response.status_code": {
+        "type": "integer"
+      },
+      "http.request.method": {
+        "type": "keyword"
+      },
+      "url.path": {
+        "type": "keyword"
+      },
+      "response_time_ms": {
+        "type": "float"
+      },
+      "trace.id": {
+        "type": "keyword"
+      },
+      "deployment.version": {
+        "type": "keyword"
+      },
+      "deployment.timestamp": {
+        "type": "date"
+      },
+      "geo.region": {
+        "type": "keyword"
+      },
+      "container.id": {
+        "type": "keyword"
+      },
+      "kubernetes.pod.name": {
+        "type": "keyword"
+      }
     }
   }
 }

@@ -14,7 +14,7 @@
 --     service_name: string - Name of the service to investigate
 -- ============================================================
 
-FROM logs-opsguard-incidents
+FROM opsguard-incidents
 | WHERE @timestamp > NOW() - 1 hour
   AND service.name == ?service_name
 | STATS

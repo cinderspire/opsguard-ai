@@ -14,7 +14,7 @@
 --     - time_window: string, "Lookback period for deployments"
 -- ============================================================
 
-FROM logs-opsguard-incidents
+FROM opsguard-incidents
 | WHERE @timestamp > NOW() - ?time_window
   AND deployment.version IS NOT NULL
 | STATS

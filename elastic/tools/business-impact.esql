@@ -14,7 +14,7 @@
 --     service_name: string - Affected service name
 -- ============================================================
 
-FROM business-opsguard-metrics
+FROM opsguard-business
 | WHERE @timestamp > NOW() - 1 hour
   AND service.name == ?service_name
 | STATS

@@ -14,7 +14,7 @@
 --     time_window: string - How far back to look (e.g., '15 minutes')
 -- ============================================================
 
-FROM metrics-opsguard-system
+FROM opsguard-metrics
 | WHERE @timestamp > NOW() - 1 hour
 | STATS
     avg_cpu = AVG(system.cpu.usage_percent),
