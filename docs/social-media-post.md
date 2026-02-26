@@ -16,7 +16,7 @@ MTTR: 2.5 hours → 1 min 42 sec (97% faster)
 
 #ElasticAgentBuilder #Hackathon #AI #DevOps
 
-🔗 [GitHub repo link]
+🔗 https://github.com/cinderspire/opsguard-ai
 ```
 
 ### Turkish Version (alternative):
@@ -35,7 +35,7 @@ MTTR: 2.5 saat → 1dk 42sn (%97 iyileşme)
 
 #ElasticAgentBuilder #Hackathon
 
-🔗 [GitHub repo link]
+🔗 https://github.com/cinderspire/opsguard-ai
 ```
 
 ### Tips:

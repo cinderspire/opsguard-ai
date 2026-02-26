@@ -36,6 +36,8 @@ Designing confidence scoring for hypothesis comparison required careful prompt e
 
 **Measurable Impact:** MTTR reduced from 2–4 hours to under 2 minutes (**97% improvement**). Revenue loss per incident reduced by 80–95% through faster detection and automated response. On-call engineer night-time pages reduced by 80% — the agent handles triage automatically.
 
+**GitHub:** https://github.com/cinderspire/opsguard-ai
+
 ---
 
 **Character count:** ~2,800 characters / ~430 words ✅
