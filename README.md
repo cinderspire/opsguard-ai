@@ -58,7 +58,7 @@ Production Systems → Elasticsearch
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/hasankaankaplan/opsguard-ai.git
+git clone https://github.com/cinderspire/opsguard-ai.git
 cd opsguard-ai
 
 # 2. Set your Elastic Cloud credentials

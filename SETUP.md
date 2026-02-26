@@ -34,7 +34,7 @@
 
 ```bash
 # Clone the repo
-git clone https://github.com/hasankaankaplan/opsguard-ai.git
+git clone https://github.com/cinderspire/opsguard-ai.git
 cd opsguard-ai
 
 # Generate sample data (incident scenario + historical incidents)
